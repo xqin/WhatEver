@@ -65,10 +65,6 @@ namespace WhatEver{
 
         private void proxyItem_Click(object sender, EventArgs e){
             applySetting(((ToolStripMenuItem)sender).Name);
-            foreach (ToolStripMenuItem item in this.ProxyList.DropDownItems){
-                item.Checked = false;
-            }
-            ((ToolStripMenuItem)sender).Checked = true;
             MessageBox.Show("应用配置成功!");
         }
 
@@ -188,6 +184,11 @@ namespace WhatEver{
         private void applySetting(string id){
             Hashtable ret = Xml.getSettingById(id);
             if (ret == null) return;
+
+            foreach (ToolStripMenuItem item in this.ProxyList.DropDownItems){
+                item.Checked = item.Name == id;
+            }
+
             Proxies.SetProxy((string)ret["ProxyServer"], (string)ret["ProxyOverride"]);
             string file = Environment.GetEnvironmentVariable("SystemRoot") + @"\system32\drivers\etc\hosts";
             string txt = File.ReadAllText(file, Encoding.Default);
