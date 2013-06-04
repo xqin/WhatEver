@@ -64,8 +64,7 @@ namespace WhatEver{
         }
 
         private void proxyItem_Click(object sender, EventArgs e){
-            applySetting(((ToolStripMenuItem)sender).Name);
-            MessageBox.Show("应用配置成功!");
+            applySetting(((ToolStripMenuItem)sender).Name, ((ToolStripMenuItem)sender).Text);
         }
 
         private void SaveAsSetting_Click(object sender, EventArgs e){
@@ -76,7 +75,7 @@ namespace WhatEver{
                 this.EnableProxy.Checked?"1":"0", getProxyServer(), getProxyOverride(), HostContent.Text
             });
             LoadConfigToOption();
-            MessageBox.Show("保存成功!");
+            ShowTips("配置保存成功!");
         }
 
         private string getProxyOverride(){
@@ -165,7 +164,7 @@ namespace WhatEver{
 
         private void SaveSetting_Click(object sender, EventArgs e){
             SaveConfig();
-            MessageBox.Show("保存成功!");
+            ShowTips("配置保存成功!");
         }
         private void SaveConfig(){
             SettingItem st = (SettingItem)ConfigList.SelectedItem;
@@ -177,11 +176,10 @@ namespace WhatEver{
         private void ApplySetting_Click(object sender, EventArgs e){
             SaveConfig();
             SettingItem st = (SettingItem)ConfigList.SelectedItem;
-            applySetting(st.Id);
-            MessageBox.Show("应用成功!");
+            applySetting(st.Id, st.Name);
         }
 
-        private void applySetting(string id){
+        private void applySetting(string id, string name){
             Hashtable ret = Xml.getSettingById(id);
             if (ret == null) return;
 
@@ -196,6 +194,7 @@ namespace WhatEver{
             string host = ((string)ret["Hosts"]);
             //把Hosts放在 hosts文件的最上面,优先级最高
             File.WriteAllText(file, string.Format("#WhatEver Start\r\n{0}\r\n#WhatEver End\r\n{1}", host, txt), Encoding.Default);
+            ShowTips("配置 [" + name + "] 应用成功!");
         }
 
         private void ShareConfig_Click(object sender, EventArgs e){
@@ -205,7 +204,7 @@ namespace WhatEver{
             if (ret == null) return;
             ret.Add("Name", st.Name);
             Clipboard.SetDataObject(Convert.ToBase64String(Encoding.UTF8.GetBytes(JSON.Encode(ret))));
-            MessageBox.Show("当前的配置信息已经保存到剪贴板了,发给好友分享吧!");
+            ShowTips("当前的配置信息已经保存到剪贴板了,发给好友分享吧!");
         }
 
         private void getShareConfig_Click(object sender, EventArgs e){
@@ -220,8 +219,10 @@ namespace WhatEver{
                     });
                     LoadConfigToOption();
                     Clipboard.SetDataObject("");
-                    MessageBox.Show("保存成功!");
-                }catch{ }
+                    ShowTips("配置信息导入成功!");
+                }catch{
+                    ShowTips("配置信息导入失败!");
+                }
             }
         }
 
@@ -248,7 +249,11 @@ namespace WhatEver{
 
         private void 关闭代理CToolStripMenuItem_Click(object sender, EventArgs e){
             Proxies.UnsetProxy();
-            MessageBox.Show("代理关闭成功!");
+            ShowTips("代理关闭成功!");
+        }
+
+        private void ShowTips(string tips){
+            IT.ShowBalloonTip(3000, "提示", tips, ToolTipIcon.Info);
         }
 
         private Form prompt;
