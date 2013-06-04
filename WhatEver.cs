@@ -116,12 +116,14 @@ namespace WhatEver{
             if (ret == null) return;
             if ((string)ret["ProxyEnable"] == "1"){
                 EnableProxy.Checked = true;
+                HTTP_IP.Text = HTTP_Port.Text = HTTPS_IP.Text = HTTPS_Port.Text = FTP_IP.Text = FTP_Port.Text = SOCKS_IP.Text = SOCKS_Port.Text = "";
                 if (((string)ret["ProxyServer"]).IndexOf("=") == -1){
                     UseAllSameSetting.Checked = true;
                     string[] proxy = ((string)ret["ProxyServer"]).Split(':');
                     HTTP_IP.Text = proxy[0];
                     HTTP_Port.Text = proxy[1];
                 }else{
+                    UseAllSameSetting.Checked = false;
                     string[] proxys = ((string)ret["ProxyServer"]).Split(';');
                     foreach (string p in proxys){
                         string[] proxy = p.Split('=');
@@ -146,9 +148,7 @@ namespace WhatEver{
                         }
                     }
                 }
-                if (((string)ret["ProxyOverride"]).IndexOf("<local>") != -1){
-                    SkipLocalProxy.Checked = true;
-                }
+                SkipLocalProxy.Checked = (((string)ret["ProxyOverride"]).IndexOf("<local>") != -1);
             }else{
                 EnableProxy.Checked = false;
             }
@@ -235,6 +235,7 @@ namespace WhatEver{
             if (this.WindowState == FormWindowState.Minimized){
                 this.Show();
                 this.WindowState = FormWindowState.Normal;
+                this.ShowInTaskbar = true;
                 return;
             }
             this.Hide();
