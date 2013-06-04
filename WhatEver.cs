@@ -45,6 +45,7 @@ namespace WhatEver{
         private void WhatEver_Load(object sender, EventArgs e){
             if (File.Exists(Config_File) == false){
                 File.WriteAllText(Config_File, "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Config></Config>", Encoding.UTF8);
+                ShowTips("我在这 ;)");
             }
             Xml = new XmlManager(Config_File);
             LoadConfigToOption();
