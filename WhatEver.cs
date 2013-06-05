@@ -157,6 +157,7 @@ namespace WhatEver{
 
             SaveSetting.Enabled = true;
             ApplySetting.Enabled = true;
+            ShareConfig.Enabled = true;
         }
 
         private void UseAllSameSetting_CheckedChanged(object sender, EventArgs e){
@@ -204,8 +205,9 @@ namespace WhatEver{
             Hashtable ret = Xml.getSettingById(st.Id);
             if (ret == null) return;
             ret.Add("Name", st.Name);
-            Clipboard.SetDataObject(Convert.ToBase64String(Encoding.UTF8.GetBytes(JSON.Encode(ret))));
-            ShowTips("当前的配置信息已经保存到剪贴板了,发给好友分享吧!");
+            //Clipboard.SetDataObject(Convert.ToBase64String(Encoding.UTF8.GetBytes(JSON.Encode(ret))));
+            Clipboard.SetDataObject(JSON.Encode(ret));
+            MessageBox.Show("当前的配置信息已经保存到剪贴板了,发给好友分享吧!");
         }
 
         private void getShareConfig_Click(object sender, EventArgs e){
@@ -213,16 +215,18 @@ namespace WhatEver{
 
             if (iData.GetDataPresent(DataFormats.Text)){
                 try{
-                    Hashtable config = (Hashtable)JSON.Decode(Encoding.UTF8.GetString(Convert.FromBase64String((String)iData.GetData(DataFormats.Text))));
+                    string txt = (String)iData.GetData(DataFormats.Text);
+                    if(txt == "")return;
+                    Hashtable config = (Hashtable)JSON.Decode(txt);
                     string guid = string.Format("{{{0}}}", Guid.NewGuid().ToString());
                     Xml.addNewSetting((string)config["Name"], guid, new string[]{
                         (string)config["ProxyEnable"], (string)config["ProxyServer"], (string)config["ProxyOverride"], (string)config["Hosts"]
                     });
                     LoadConfigToOption();
                     Clipboard.SetDataObject("");
-                    ShowTips("配置信息导入成功!");
+                    MessageBox.Show("配置信息导入成功!");
                 }catch{
-                    ShowTips("配置信息导入失败!");
+                    MessageBox.Show("配置信息导入失败!\n剪贴板中的内容不是本程序所需要的配置信息!");
                 }
             }
         }
