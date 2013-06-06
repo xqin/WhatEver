@@ -62,6 +62,9 @@ namespace WhatEver{
                 item.Click += new EventHandler(this.proxyItem_Click);
                 ProxyList.DropDownItems.Add(item);
             }
+            SaveSetting.Enabled = false;
+            ApplySetting.Enabled = false;
+            ShareConfig.Enabled = false;
         }
 
         private void proxyItem_Click(object sender, EventArgs e){
